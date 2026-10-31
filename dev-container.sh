@@ -13,7 +13,7 @@
 #               use this for large data files and build output)
 #   ~/.ssh      host ~/.ssh, read-only (ssh keys for git)
 #
-# The container gets all host CPUs and memory.
+# The container gets all host CPUs and 75% of host memory.
 
 set -euo pipefail
 
@@ -101,15 +101,16 @@ if [[ -d "$HOME/.ssh" ]]; then
 fi
 
 host_cpus="$(sysctl -n hw.ncpu)"
-host_mem_mib="$(( $(sysctl -n hw.memsize) / 1024 / 1024 ))"
+# Leave a quarter of host memory for macOS so the VM can't exhaust it.
+mem_mib="$(( $(sysctl -n hw.memsize) / 1024 / 1024 * 3 / 4 ))"
 
-echo "Starting container '$NAME' (${host_cpus} CPUs, ${host_mem_mib} MiB)..."
+echo "Starting container '$NAME' (${host_cpus} CPUs, ${mem_mib} MiB)..."
 container run \
     --detach \
     --init \
     --name "$NAME" \
     --cpus "$host_cpus" \
-    --memory "${host_mem_mib}M" \
+    --memory "${mem_mib}M" \
     --volume "$WORKSPACE:/workspace" \
     --volume "$VOLUME:/data" \
     ${ssh_mount[@]+"${ssh_mount[@]}"} \

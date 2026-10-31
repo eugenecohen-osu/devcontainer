@@ -29,7 +29,8 @@ What the script does:
 - **Container is stopped:** restarts it as-is
 - **Container is already running:** exits with an error
 
-The container gets all of your Mac's CPUs and memory.
+The container gets all of your Mac's CPUs and 75% of its memory, leaving the
+rest for macOS.
 
 ## Mounts
 
