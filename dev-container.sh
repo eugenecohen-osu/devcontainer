@@ -13,7 +13,7 @@
 #               use this for large data files and build output)
 #   ~/.ssh      host ~/.ssh, read-only (ssh keys for git)
 #
-# The container gets all host CPUs and 75% of host memory.
+# The container gets all host CPUs and 50% of host memory.
 
 set -euo pipefail
 
@@ -101,8 +101,10 @@ if [[ -d "$HOME/.ssh" ]]; then
 fi
 
 host_cpus="$(sysctl -n hw.ncpu)"
-# Leave a quarter of host memory for macOS so the VM can't exhaust it.
-mem_mib="$(( $(sysctl -n hw.memsize) / 1024 / 1024 * 3 / 4 ))"
+# Leave half of host memory for macOS. Linux fills spare guest RAM with
+# page cache, which macOS sees as VM memory it can't reclaim, so a large
+# file copy can otherwise push the host out of memory.
+mem_mib="$(( $(sysctl -n hw.memsize) / 1024 / 1024 / 2 ))"
 
 echo "Starting container '$NAME' (${host_cpus} CPUs, ${mem_mib} MiB)..."
 container run \

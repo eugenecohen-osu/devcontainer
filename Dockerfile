@@ -15,7 +15,12 @@ RUN apt-get update \
         ca-certificates \
         gdb \
         git \
+        libblosc-dev \
+        nlohmann-json3-dev \
         openssh-client \
+        python3 \
+        python3-pip \
+        python3-venv \
         sudo \
     && rm -rf /var/lib/apt/lists/*
 
